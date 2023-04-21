@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://js.arcgis.com/4.26/"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="jumbotron">
+                    <h1 id="active_header">Survey Data Explorer!</h1>
+                    <form id="queryForm">
+                        <div class="form-inline">
+                            <div class="form-group-inv">
+
+                                <div class="survey123_chk">
+                                    <input id="survey123" type="radio" value="survey123" name="inventory" checked>
+                                    <label for="survey123">Survey123</label>
+                                </div>
+                                <div class="collector_chk">
+                                    <input id="collector" type="radio" value="collector" name="inventory">
+                                    <label for="collector"> Collector</label>
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="form-group chat-box">
+                                <div class="chat">
+
+                                    <div class="duplicate-checkbox-gp">
+                                        <input id="duplicate-checkbox" type="checkbox">
+                                        <label for="duplicate-checkbox">View Duplicates ONLY!</label>
+                                    </div>
+
+                                    <div title="Items to delete in notes" class="chat_icon"><svg class="icn_moon"><use  xlink:href="img/sprite.svg#icon-bubbles4"></use></svg>
+
+                                        <div class="number"><span id="chat_number">0</span></div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-inline">
+
+
+
+
+
+
+                            <div class="form-group">
+                                <label for="queryYear">Year</label>
+                                <select id="queryYear" class="form-control">
+                                <option value="2022">2022</option>
+                                <option value="2023">2023</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="layer">Layer</label>
+                                <select id="layer" class="form-control">
+                                    <option value="pool">Pool</option>
+                                    <option value="house">Habitable Structures</option>
+                                    <option value="verticalecs">Vertical ECS</option>
+                                    <option value="revetment">Revetment</option>
+                                    <option value="suspected">Suspected ECS</option>
+                                    <option value="dbr">DBR</option>
+                                    <option value="newstructure">New Structure</option>
+                                    <option value="testhouse">Test House</option>
+                                    
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-default">Go</button>
+
+
+                            <div class="inventorytypegroup-dropdown">
+                                <label for="inventorytype">Inventory Type</label>
+                                <select id="inventorytype" class="form-control">
+                                    <option value="structural" id="struc_invisble" >Structural Inventory</option>
+                                    <option id="da_invisble" value="damage">Damage Assessment</option>
+                                
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <!-- <div class="col-md-12" id="table_container"> -->
+            <table id="featureTable" class="display" style="display: none;width:98%">
+                <thead id="table_head">
+
+                </thead>
+                <tbody id="tableBody">
+
+                </tbody>
+            </table>
+
+            <p id="recordCountMessage"></p>
+            <p id="additionalRowsMessage" style="display: none" class="alert alert-warning">There are additional rows that meet your query criteria.</p>
+        </div>
+    </div>
+    <div class="popup_container">
+        <div class="edit-popup">
+            <div class="titlebar">
+                <div class="del_close-btn"><span>&times;</span></div>
+                <div class="info-edit">Edit Feature</div>
+            </div>
+
+            <div class="feature-list-box">
+                <div class="feature-list">
+                    <div class="features">
+                        <form class="edit-form">
+                            <div class="form_group">
+                                <div class="formgp_label"><label for=id>Id:</label></div>
+                                <input type="text" class="updateOnchange" id=id value='value'>
+                            </div>
+                            <div class="form_group">
+                                <div class="formgp_label"><label for=name>Name:</label></div>
+                                <input type="text" class="updateOnchange" id=name value='value1'>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="image_section">
+                    <div class="image_section-header">
+                        <span>ATTACHMENTS</span>
+                        <form id="uploadfiles" enctype="multipart/form-data" method="POST">
+                            <input type="file" name="file" id="browse_file">
+                            <div class="submission">
+                                <button type="submit" id="submitfile" disabled>Upload</button>
+                                <label for="submitfile" class="upload_label"></label>
+                            </div>
+
+                        </form>
+
+                    </div>
+                    <div class="image-container">
+
+                    </div>
+                </div>
+            </div>
+            <div class="button-box">
+                <button id="submitform">SAVE</button>
+                <button id="cancelform">CANCEL</button>
+            </div>
+        </div>
+    </div>
+    <div class="attachment_container"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
